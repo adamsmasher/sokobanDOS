@@ -35,8 +35,14 @@ Start:		; backup old KB interrupt
 
 KBHandler:	PUSH	AX
 		IN	AL, 0x60			; get key event
-		MOV	[Keys], AL			; copy to keys
-		MOV	AL, 0x20			; ACK
+		CMP	AL, 0x01			; ESC pressed?
+		JNE	.testEscRel
+		OR	[Keys], AL			; set bit 0
+.testEscRel:	CMP	AL, 0x81
+		JNE	.done
+		MOV	AL, 0xFE
+		AND	[Keys], AL			; unset bit 0
+.done:		MOV	AL, 0x20			; ACK
 		OUT	0x20, AL			; send ACK
 		POP	AX
 		IRET
