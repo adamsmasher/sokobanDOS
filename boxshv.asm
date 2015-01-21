@@ -17,8 +17,8 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0xA000
 		MOV	ES, AX
 .gameLoop:	; check for exit
-		TEST	BYTE [Quit], 1			; 0 if esc not pressed
-		JZ	.gameLoop
+		CMP	BYTE [Quit], 1
+		JNZ	.gameLoop
 		; restore text mode 0x03
 		MOV	AX, 0x03
 		INT	0x10
