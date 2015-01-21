@@ -16,7 +16,8 @@ Start:		; backup old KB interrupt
 		; make ES point to the VGA memory
 		MOV	AX, 0xA000
 		MOV	ES, AX
-.gameLoop:	; check for exit
+.gameLoop:	CALL	WaitFrame
+		; check for exit
 		CMP	BYTE [Quit], 1
 		JNZ	.gameLoop
 		; restore text mode 0x03
@@ -42,6 +43,17 @@ KBHandler:	PUSH	AX
 		OUT	0x20, AL			; send ACK
 		POP	AX
 		IRET
+
+WaitFrame:	PUSH	DX
+		MOV	DX, 0x03DA
+.waitRetrace:	IN	AL, DX
+		TEST	AL, 0x08			; are we in retrace?
+		JNZ	.waitRetrace
+.endRefresh:	IN	AL, DX
+		TEST	AL, 0x08			; are we in refresh?
+		JZ	.endRefresh
+		POP DX
+		RET
 
 OldKBHandler:	DD	0
 
