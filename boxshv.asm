@@ -17,7 +17,7 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0xA000
 		MOV	ES, AX
 .gameLoop:	; check for exit
-		TEST	BYTE [Keys], 1			; 0 if esc not pressed
+		TEST	BYTE [Quit], 1			; 0 if esc not pressed
 		JZ	.gameLoop
 		; restore text mode 0x03
 		MOV	AX, 0x03
@@ -36,12 +36,8 @@ Start:		; backup old KB interrupt
 KBHandler:	PUSH	AX
 		IN	AL, 0x60			; get key event
 		CMP	AL, 0x01			; ESC pressed?
-		JNE	.testEscRel
-		OR	[Keys], AL			; set bit 0
-.testEscRel:	CMP	AL, 0x81
 		JNE	.done
-		MOV	AL, 0xFE
-		AND	[Keys], AL			; unset bit 0
+		MOV	[Quit], AL
 .done:		MOV	AL, 0x20			; ACK
 		OUT	0x20, AL			; send ACK
 		POP	AX
@@ -49,4 +45,4 @@ KBHandler:	PUSH	AX
 
 OldKBHandler:	DD	0
 
-Keys:		DB	0
+Quit:		DB	0
