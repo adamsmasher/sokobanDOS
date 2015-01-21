@@ -16,6 +16,10 @@ Start:		; backup old KB interrupt
 		; make ES point to the VGA memory
 		MOV	AX, 0xA000
 		MOV	ES, AX
+		; draw a tile
+		MOV	SI, Tiles
+		MOV	DI, 0
+		CALL	BlitTile
 .gameLoop:	CALL	WaitFrame
 		; check for exit
 		CMP	BYTE [Quit], 1
@@ -54,6 +58,25 @@ WaitFrame:	PUSH	DX
 		JZ	.endRefresh
 		POP DX
 		RET
+
+
+; SI = Tile*, DI = Dest*
+BlitTile:	PUSH	CX
+		PUSH	DX
+		CLD					; increment
+		MOV	CH, 0				; clear hi-counter
+		MOV	DL, 0x10			; 16 rows
+.row:		MOV	CL, 0x08			; 8 word copies
+		REP	MOVSW
+		DEC	DL
+		JZ	.done
+		ADD	DI, 304				; move to next row
+		JMP	.row
+.done:		POP	DX
+		POP	CX
+		RET
+
+Tiles:		INCBIN	"wall.dat"
 
 OldKBHandler:	DD	0
 
