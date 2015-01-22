@@ -16,10 +16,7 @@ Start:		; backup old KB interrupt
 		; make ES point to the VGA memory
 		MOV	AX, 0xA000
 		MOV	ES, AX
-		; draw a tile
-		MOV	SI, Tiles
-		MOV	DI, 0
-		CALL	BlitTile
+		CALL	DrawBoard
 .gameLoop:	CALL	WaitFrame
 		; check for exit
 		CMP	BYTE [Quit], 1
@@ -60,6 +57,46 @@ WaitFrame:	PUSH	DX
 		RET
 
 
+DrawBoard:	PUSHA
+		MOV	BX, Board
+		MOV	SI, 0				; index into board
+		MOV	CH, 0				; row
+		MOV	WORD [RowBase], 0
+.drawRow:	MOV	WORD [TileBase], 0
+		MOV	CL, 0				; col
+.rowLoop:	MOV	AL, [BX + SI]			; get tile
+		CMP	AL, 0				; is tile 0?
+		JZ	.nextTile
+		DEC	AL
+		CALL	DrawTile
+.nextTile:	ADD	WORD [TileBase], 16
+		INC	SI
+		INC	CL
+		CMP	CL, 8
+		JNZ	.rowLoop
+		ADD	WORD [RowBase], 5120
+		INC	CH
+		CMP	CH, 9
+		JNZ	.drawRow
+		POPA
+		RET
+
+
+; AL = Tile #
+DrawTile:	PUSH	SI
+		PUSH	DI
+		MOV	AH, 0				; clear out high bits
+		SHL	AX, 8				; get tile index
+		ADD	AX, Tiles			; get pointer
+		MOV	SI, AX
+		MOV	DI, [RowBase]
+		ADD	DI, [TileBase]
+		CALL	BlitTile
+		POP	DI
+		POP	SI
+		RET
+
+
 ; SI = Tile*, DI = Dest*
 BlitTile:	PUSH	CX
 		PUSH	DX
@@ -75,6 +112,11 @@ BlitTile:	PUSH	CX
 .done:		POP	DX
 		POP	CX
 		RET
+
+RowBase:	DW	0
+TileBase:	DW	0
+
+Board:		INCBIN	"board.dat"
 
 Tiles:		INCBIN	"wall.dat"
 
