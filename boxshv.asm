@@ -17,6 +17,7 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0xA000
 		MOV	ES, AX
 		CALL	DrawBoard
+		CALL	DrawPlayer
 .gameLoop:	CALL	WaitFrame
 		; check for exit
 		CMP	BYTE [Quit], 1
@@ -97,6 +98,17 @@ DrawTile:	PUSH	SI
 		RET
 
 
+DrawPlayer:	PUSH	SI
+		PUSH	DI
+		MOV	SI, PlayerTile
+		MOV	DI, [PlayerRowBase]
+		ADD	DI, [PlayerTileBase]
+		CALL	BlitTile
+		POP	DI
+		POP	SI
+		RET
+
+
 ; SI = Tile*, DI = Dest*
 BlitTile:	PUSH	CX
 		PUSH	DX
@@ -115,8 +127,12 @@ BlitTile:	PUSH	CX
 
 RowBase:	DW	0
 TileBase:	DW	0
+PlayerRowBase:	DW	2 * 320 * 16
+PlayerTileBase:	DW	2 * 16
 
 Board:		INCBIN	"board.dat"
+
+PlayerTile:	INCBIN	"player.dat"
 
 Tiles:		INCBIN	"wall.dat"
 
