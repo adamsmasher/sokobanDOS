@@ -19,6 +19,7 @@ Start:		; backup old KB interrupt
 		CALL	DrawBoard
 		CALL	DrawPlayer
 .gameLoop:	CALL	WaitFrame
+		CALL	UpdatePlayer
 		; check for exit
 		CMP	BYTE [Quit], 1
 		JNZ	.gameLoop
@@ -38,9 +39,21 @@ Start:		; backup old KB interrupt
 
 KBHandler:	PUSH	AX
 		IN	AL, 0x60			; get key event
-		CMP	AL, 0x01			; ESC pressed?
-		JNE	.done
+.testEsc:	CMP	AL, 0x01			; ESC pressed?
+		JNE	.testUp
 		MOV	[Quit], AL
+.testUp:	CMP	AL, 72
+		JNE	.testLeft
+		MOV	BYTE [MoveDir], 1
+.testLeft:	CMP	AL, 75
+		JNE	.testRight
+		MOV	BYTE [MoveDir], 2
+.testRight	CMP	AL, 77
+		JNE	.testDown
+		MOV	BYTE [MoveDir], 3
+.testDown	CMP	AL, 80
+		JNE	.done
+		MOV	BYTE [MoveDir], 4
 .done:		MOV	AL, 0x20			; ACK
 		OUT	0x20, AL			; send ACK
 		POP	AX
@@ -98,6 +111,73 @@ DrawTile:	PUSH	SI
 		RET
 
 
+EraseTile:	PUSH	DI
+		PUSH	CX
+		PUSH	DX
+		MOV	DI, [RowBase]
+		ADD	DI, [TileBase]
+		XOR	AX, AX				; clear AX
+		CLD					; increment
+		MOV	CH, 0				; clear hi-counter
+		MOV	DL, 0x10			; 16 rows
+.row:		MOV	CL, 0x08			; 8 word writes
+		REP	STOSW				; write 0000
+		DEC	DL				; next row?
+		JZ	.done
+		ADD	DI, 304				; next row
+		JMP	.row
+.done:		POP	DX
+		POP	CX
+		POP	DI
+		RET
+
+
+MoveTable:	DW	MoveUp, MoveLeft, MoveRight, MoveDown
+UpdatePlayer:	MOV	AL, [MoveDir]
+		AND	AL, AL				; are we moving?
+		JE	.done
+		; get index into move table into SI
+		XOR	AH, AH				; clear hi bit
+		MOV	[MoveDir], AH			; clear motion
+		MOV	SI, AX
+		DEC	SI
+		SHL	SI, 1				; *2 for word addrs
+		CALL	ErasePlayer
+		MOV	AX, [MoveTable + SI]		; get move function
+		CALL	AX
+		CALL	UpdateUnder
+		JMP	DrawPlayer
+.done:		RET
+
+
+MoveRight:	ADD	WORD [PlayerTileBase], 16	; move player 16px right
+		INC	BYTE [PlayerCol]
+		RET
+
+MoveDown:	ADD	WORD [PlayerRowBase], 16 * 320	; move player 16px down
+		INC	BYTE [PlayerRow]
+		RET
+
+MoveLeft:	SUB	WORD [PlayerTileBase], 16	; move player 16px left
+		DEC	BYTE [PlayerCol]
+		RET
+
+MoveUp:		SUB	WORD [PlayerRowBase], 16 * 320	; move player 16px up
+		DEC	BYTE [PlayerRow]
+		RET
+
+
+ErasePlayer:	MOV	AX, [PlayerRowBase]
+		MOV	[RowBase], AX
+		MOV	AX, [PlayerTileBase]
+		MOV	[TileBase], AX
+		MOV	AL, [UnderTile]
+		AND	AL, AL
+		JZ	EraseTile
+		DEC	AL
+		JMP	DrawTile
+
+
 DrawPlayer:	PUSH	SI
 		PUSH	DI
 		MOV	SI, PlayerTile
@@ -106,6 +186,18 @@ DrawPlayer:	PUSH	SI
 		CALL	BlitTile
 		POP	DI
 		POP	SI
+		RET
+
+
+UpdateUnder:	PUSH	SI
+		XOR	AH, AH
+		MOV	AL, [PlayerRow]
+		SHL	AL, 3				; row * 8 bc 8 cols/row
+		ADD	AL, BYTE [PlayerCol]
+		MOV	SI, AX
+		MOV	AL, [Board + SI]
+		MOV	[UnderTile], AL
+		POP SI
 		RET
 
 
@@ -127,8 +219,18 @@ BlitTile:	PUSH	CX
 
 RowBase:	DW	0
 TileBase:	DW	0
-PlayerRowBase:	DW	2 * 320 * 16
-PlayerTileBase:	DW	2 * 16
+
+START_ROW	EQU	2
+START_COL	EQU	2
+
+PlayerRow:	DB	START_ROW
+PlayerCol:	DB	START_COL
+
+MoveDir:	DB	0
+
+PlayerRowBase:	DW	START_ROW * 320 * 16
+PlayerTileBase:	DW	START_COL * 16
+UnderTile:	DB	0
 
 Board:		INCBIN	"board.dat"
 
