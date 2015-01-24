@@ -133,10 +133,12 @@ EraseTile:	PUSH	DI
 
 
 MoveTable:	DW	MoveUp, MoveLeft, MoveRight, MoveDown
+RevertTable:	DW	MoveDown, MoveRight, MoveLeft, MoveUp
 UpdatePlayer:	MOV	AL, [MoveDir]
 		AND	AL, AL				; are we moving?
-		JE	.done
-		; get index into move table into SI
+		JNZ	.move
+		RET
+.move:		; get index into move table into SI
 		XOR	AH, AH				; clear hi bit
 		MOV	[MoveDir], AH			; clear motion
 		MOV	SI, AX
@@ -146,8 +148,13 @@ UpdatePlayer:	MOV	AL, [MoveDir]
 		MOV	AX, [MoveTable + SI]		; get move function
 		CALL	AX
 		CALL	UpdateUnder
+		CALL	CanWalk				; if Z, we're ok
+		JZ	DrawPlayer			; just draw the player
+		; revert the movement if we can't walk
+		MOV	AX, [RevertTable + SI]
+		CALL	AX
+		CALL	UpdateUnder
 		JMP	DrawPlayer
-.done:		RET
 
 
 MoveRight:	ADD	WORD [PlayerTileBase], 16	; move player 16px right
@@ -164,6 +171,9 @@ MoveLeft:	SUB	WORD [PlayerTileBase], 16	; move player 16px left
 
 MoveUp:		SUB	WORD [PlayerRowBase], 16 * 320	; move player 16px up
 		DEC	BYTE [PlayerRow]
+		RET
+
+CanWalk:	CMP	BYTE [UnderTile], 0
 		RET
 
 
