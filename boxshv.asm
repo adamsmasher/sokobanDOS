@@ -7,7 +7,7 @@ Start:		; backup old KB interrupt
 		MOV	[OldKBHandler], AX
 		MOV	AX, [ES:0x26]
 		MOV	[OldKBHandler + 2], AX
-;		; install new KB interrupt
+		; install new KB interrupt
 		MOV	WORD [ES:0x24], KBHandler
 		MOV	WORD [ES:0x26], CS
 		; set video mode 0x13
