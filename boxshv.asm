@@ -78,11 +78,15 @@ DrawBoard:	PUSHA
 		MOV	WORD [RowBase], 0
 .drawRow:	MOV	WORD [TileBase], 0
 		MOV	CL, 0				; col
-.rowLoop:	MOV	AL, [BX + SI]			; get tile
+.rowLoop:	CALL	FindBox
+		JNE	.checkTile
+		MOV	AL, 1				; box is tile 1
+		JMP	.drawTile
+.checkTile:	MOV	AL, [BX + SI]			; get tile
 		CMP	AL, 0				; is tile 0?
 		JZ	.nextTile
 		DEC	AL
-		CALL	DrawTile
+.drawTile:	CALL	DrawTile
 .nextTile:	ADD	WORD [TileBase], 16
 		INC	SI
 		INC	CL
@@ -176,6 +180,21 @@ MoveUp:		SUB	WORD [PlayerRowBase], 16 * 320	; move player 16px up
 CanWalk:	CMP	BYTE [UnderTile], 0
 		RET
 
+FindBox:	PUSH	ES
+		PUSH	DI
+		MOV	AX, DS
+		MOV	ES, AX
+		MOV	AX, CX
+		MOV	CX, [BoxCnt]
+		; iterate through until we find a matching box or run out of
+		; boxes
+		MOV	DI, Boxes
+		REPNE	SCASW
+		MOV	CX, AX				; restore CX
+		POP	DI
+		POP	ES
+		RET
+
 
 ErasePlayer:	MOV	AX, [PlayerRowBase]
 		MOV	[RowBase], AX
@@ -244,9 +263,19 @@ UnderTile:	DB	0
 
 Board:		INCBIN	"board.dat"
 
+BoxCnt:		DW	7
+Boxes:		DW	0x0203
+		DW	0x0304
+		DW	0x0404
+		DW	0x0604
+		DW	0x0605
+		DW	0x0603
+		DW	0x0601
+
 PlayerTile:	INCBIN	"player.dat"
 
 Tiles:		INCBIN	"wall.dat"
+		INCBIN	"box.dat"
 
 OldKBHandler:	DD	0
 
