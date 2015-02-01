@@ -37,25 +37,26 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0x4C00			; return code 0
 		INT	0x21
 
+DirTable:	DB	72, 75, 77, 80			; up, left, right, down
 KBHandler:	PUSH	AX
+		PUSH	SI
 		IN	AL, 0x60			; get key event
 .testEsc:	CMP	AL, 0x01			; ESC pressed?
-		JNE	.testUp
+		JNE	.testDirs
 		MOV	[Quit], AL
-.testUp:	CMP	AL, 72
-		JNE	.testLeft
-		MOV	BYTE [MoveDir], 1
-.testLeft:	CMP	AL, 75
-		JNE	.testRight
-		MOV	BYTE [MoveDir], 2
-.testRight	CMP	AL, 77
-		JNE	.testDown
-		MOV	BYTE [MoveDir], 3
-.testDown	CMP	AL, 80
-		JNE	.done
-		MOV	BYTE [MoveDir], 4
+.testDirs:	MOV	SI, 0				; i = 0
+		MOV	AH, 4				; 4 entries in table
+.testLoop:	CMP	AL, [DirTable + SI]		; compare to keycode
+		JE	.writeDir			; do we have a match?
+		INC	SI				; next entry
+		DEC	AH
+		JNZ	.testLoop
+		JMP	.done
+.writeDir:	INC	SI
+		MOV	WORD [MoveDir], SI		; write out table entry
 .done:		MOV	AL, 0x20			; ACK
 		OUT	0x20, AL			; send ACK
+		POP	SI
 		POP	AX
 		IRET
 
@@ -255,7 +256,7 @@ START_COL	EQU	2
 PlayerRow:	DB	START_ROW
 PlayerCol:	DB	START_COL
 
-MoveDir:	DB	0
+MoveDir:	DW	0
 
 PlayerRowBase:	DW	START_ROW * 320 * 16
 PlayerTileBase:	DW	START_COL * 16
