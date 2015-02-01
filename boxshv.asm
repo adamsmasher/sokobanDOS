@@ -103,7 +103,6 @@ DrawBoard:	PUSHA
 ; AL = Tile #
 DrawTile:	PUSH	SI
 		PUSH	DI
-		MOV	AH, 0				; clear out high bits
 		SHL	AX, 8				; get tile index
 		ADD	AX, Tiles			; get pointer
 		MOV	SI, AX
