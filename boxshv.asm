@@ -73,7 +73,6 @@ WaitFrame:	PUSH	DX
 
 
 DrawBoard:	PUSHA
-		MOV	BX, Board
 		MOV	SI, 0				; index into board
 		MOV	CH, 0				; row
 		MOV	WORD [RowBase], 0
@@ -83,7 +82,7 @@ DrawBoard:	PUSHA
 		JNE	.checkTile
 		MOV	AL, 1				; box is tile 1
 		JMP	.drawTile
-.checkTile:	MOV	AL, [BX + SI]			; get tile
+.checkTile:	MOV	AL, [Board + SI]		; get tile
 		CMP	AL, 0				; is tile 0?
 		JZ	.nextTile
 		DEC	AL
