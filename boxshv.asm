@@ -136,7 +136,6 @@ EraseTile:	PUSH	DI
 
 
 MoveTable:	DW	MoveUp, MoveLeft, MoveRight, MoveDown
-RevertTable:	DW	MoveDown, MoveRight, MoveLeft, MoveUp
 UpdatePlayer:	MOV	AL, [MoveDir]
 		AND	AL, AL				; are we moving?
 		JNZ	.move
@@ -154,7 +153,8 @@ UpdatePlayer:	MOV	AL, [MoveDir]
 		CALL	CanWalk				; if Z, we're ok
 		JZ	DrawPlayer			; just draw the player
 		; revert the movement if we can't walk
-		MOV	AX, [RevertTable + SI]
+		XOR	SI, 0x06
+		MOV	AX, [MoveTable + SI]
 		CALL	AX
 		CALL	UpdateUnder
 		JMP	DrawPlayer
