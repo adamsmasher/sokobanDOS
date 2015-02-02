@@ -56,15 +56,6 @@ BOARD_WIDTH	EQU	8
 BOARD_HEIGHT	EQU	9
 Board:		INCBIN	"board.dat"
 
-BoxCnt:		DW	7
-Boxes:		DW	0x0203
-		DW	0x0304
-		DW	0x0404
-		DW	0x0604
-		DW	0x0605
-		DW	0x0603
-		DW	0x0601
-
 PlayerTile:	INCBIN	"player.dat"
 
 Tiles:		INCBIN	"wall.dat"
