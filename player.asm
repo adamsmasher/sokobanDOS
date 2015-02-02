@@ -38,9 +38,13 @@ UpdatePlayer:	PUSH	SI
 		ADD	AL, [MoveTable + SI]		; get new tile
 		ADD	AH, [MoveTable + SI + 1]
 		MOV	BX, AX				; backup new pos
+		CALL	FindBox				; is a box here?
+		JE	.done
+		MOV	AX, BX
 		CALL	CanWalk				; is this tile clear?
 		JNZ	.done
-		CALL	ErasePlayer
+		MOV	AX, BX
+.move:		CALL	ErasePlayer
 		MOV	[PlayerPos], BX			; update new pos
 		MOV	AX, [MoveTable2 + SI]
 		ADD	[PlayerScrBase], AX

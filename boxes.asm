@@ -7,11 +7,13 @@ Boxes:		DW	0x0302
 		DW	0x0306
 		DW	0x0106
 
-; CX = box to find
+; AX = box to find
 ; sets E if the box was found
 ; returns a pointer in AX if the box is found
 FindBox:	PUSH	ES
 		PUSH	DI
+		PUSH	CX
+		MOV	CX, AX				; backup box
 		MOV	AX, DS
 		MOV	ES, AX
 		MOV	AX, CX
@@ -20,8 +22,8 @@ FindBox:	PUSH	ES
 		; boxes
 		MOV	DI, Boxes
 		REPNE	SCASW
-		MOV	CX, AX				; restore CX
 		MOV	AX, DI				; return pointer in AX
+		POP	CX
 		POP	DI
 		POP	ES
 		RET
