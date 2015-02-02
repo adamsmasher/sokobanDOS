@@ -1,3 +1,12 @@
+PlayerPos:
+PlayerRow:	DB	START_ROW
+PlayerCol:	DB	START_COL
+
+MoveDir:	DW	0
+
+PlayerScrBase:	DW	START_ROW * 320 * 16 + START_COL * 16
+UnderTile:	DB	0
+
 ; how to update the player coordinates (board)
 MoveTable:
 .up:		DB	-1

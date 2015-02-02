@@ -40,15 +40,6 @@ Start:		; backup old KB interrupt
 
 ScrBase:	DW	0
 
-PlayerPos:
-PlayerRow:	DB	START_ROW
-PlayerCol:	DB	START_COL
-
-MoveDir:	DW	0
-
-PlayerScrBase:	DW	START_ROW * 320 * 16 + START_COL * 16
-UnderTile:	DB	0
-
 PlayerTile:	INCBIN	"player.dat"
 
 Tiles:		INCBIN	"wall.dat"
