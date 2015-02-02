@@ -1,3 +1,4 @@
+		; tell NASM we want 16-bit assembly language
 		BITS	16
 		ORG	0x100				; DOS loads us here
 Start:		CALL	InstallKB
