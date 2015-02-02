@@ -23,7 +23,8 @@ one of the most rewarding, in terms of how it can help you understand how
 a PC works.
 
 I'll assume a fair amount of programming knowledge, although no pre-existing
-x86 assembly language knowledge.
+x86 assembly language knowledge. To assemble our programs, we'll be using
+the freely available [NASM](http://www.nasm.us/) assembler.
 
 README files (like this one) under each lesson will include a line-by-line
 walkthrough of any new or modified code. For maximum learning, it is
@@ -283,3 +284,7 @@ $ dosemu boxshv.com
 
 If everything worked out well, DOSEMU should load our program, wait for
 five seconds, and then quit.
+
+If you use a different environment (in particular, a different operating
+system and/or DOSBox or Bochs to test) and can provide instructions for
+setting them up, a pull request would be much appreciated.
