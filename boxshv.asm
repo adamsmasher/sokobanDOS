@@ -37,12 +37,6 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0x4C00			; return code 0
 		INT	0x21
 
-; AX = packed tile coordinates (L = row, H = col)
-; returns in AX the offset into the board
-GetTileOffset:	SHL	AL, 3
-		ADD	AL, AH
-		XOR	AH, AH
-		RET
 
 DrawBoard:	PUSHA
 		MOV	SI, 0				; index into board
@@ -101,14 +95,6 @@ EraseTile:	PUSH	DI
 
 
 
-; AX = tile we're checking
-; sets E if we can walk
-CanWalk:	PUSH	SI
-		CALL	GetTileOffset
-		MOV	SI, AX
-		CMP	BYTE [Board + SI], 0
-		POP	SI
-		RET
 
 ; CX = box to find
 ; sets E if the box was found
@@ -200,6 +186,7 @@ OldKBHandler:	DD	0
 
 Quit:		DB	0
 
+%include "board.asm"
 %include "kb.asm"
 %include "player.asm"
 %include "video.asm"
