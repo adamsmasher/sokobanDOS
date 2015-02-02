@@ -75,9 +75,8 @@ WaitFrame:	PUSH	DX
 DrawBoard:	PUSHA
 		MOV	SI, 0				; index into board
 		MOV	CH, 0				; row
-		MOV	WORD [RowBase], 0
-.drawRow:	MOV	WORD [TileBase], 0
-		MOV	CL, 0				; col
+		MOV	WORD [ScrBase], 0
+.drawRow:	MOV	CL, 0				; col
 .rowLoop:	CALL	FindBox
 		JNE	.checkTile
 		MOV	AL, 1				; box is tile 1
@@ -87,14 +86,14 @@ DrawBoard:	PUSHA
 		JZ	.nextTile
 		DEC	AL
 .drawTile:	CALL	DrawTile
-.nextTile:	ADD	WORD [TileBase], 16
+.nextTile:	ADD	WORD [ScrBase], 16
 		INC	SI
 		INC	CL
-		CMP	CL, 8
+		CMP	CL, BOARD_WIDTH
 		JNZ	.rowLoop
-		ADD	WORD [RowBase], 5120
+		ADD	WORD [ScrBase], 320 * 16 - 16 * BOARD_WIDTH
 		INC	CH
-		CMP	CH, 9
+		CMP	CH, BOARD_HEIGHT
 		JNZ	.drawRow
 		POPA
 		RET
@@ -106,8 +105,7 @@ DrawTile:	PUSH	SI
 		SHL	AX, 8				; get tile index
 		ADD	AX, Tiles			; get pointer
 		MOV	SI, AX
-		MOV	DI, [RowBase]
-		ADD	DI, [TileBase]
+		MOV	DI, [ScrBase]
 		CALL	BlitTile
 		POP	DI
 		POP	SI
@@ -117,8 +115,7 @@ DrawTile:	PUSH	SI
 EraseTile:	PUSH	DI
 		PUSH	CX
 		PUSH	DX
-		MOV	DI, [RowBase]
-		ADD	DI, [TileBase]
+		MOV	DI, [ScrBase]
 		XOR	AX, AX				; clear AX
 		CLD					; increment
 		MOV	CH, 0				; clear hi-counter
@@ -190,15 +187,14 @@ FindBox:	PUSH	ES
 		MOV	DI, Boxes
 		REPNE	SCASW
 		MOV	CX, AX				; restore CX
+		MOV	AX, DI				; return pointer in AX
 		POP	DI
 		POP	ES
 		RET
 
 
-ErasePlayer:	MOV	AX, [PlayerRowBase]
-		MOV	[RowBase], AX
-		MOV	AX, [PlayerTileBase]
-		MOV	[TileBase], AX
+ErasePlayer:	MOV	AX, [PlayerScrBase]
+		MOV	[ScrBase], AX
 		MOV	AL, [UnderTile]
 		AND	AL, AL
 		JZ	EraseTile
@@ -209,8 +205,7 @@ ErasePlayer:	MOV	AX, [PlayerRowBase]
 DrawPlayer:	PUSH	SI
 		PUSH	DI
 		MOV	SI, PlayerTile
-		MOV	DI, [PlayerRowBase]
-		ADD	DI, [PlayerTileBase]
+		MOV	DI, [PlayerScrBase]
 		CALL	BlitTile
 		POP	DI
 		POP	SI
@@ -245,8 +240,7 @@ BlitTile:	PUSH	CX
 		POP	CX
 		RET
 
-RowBase:	DW	0
-TileBase:	DW	0
+ScrBase:	DW	0
 
 START_ROW	EQU	2
 START_COL	EQU	2
@@ -256,10 +250,11 @@ PlayerCol:	DB	START_COL
 
 MoveDir:	DW	0
 
-PlayerRowBase:	DW	START_ROW * 320 * 16
-PlayerTileBase:	DW	START_COL * 16
+PlayerScrBase:	DW	START_ROW * 320 * 16 + START_COL * 16
 UnderTile:	DB	0
 
+BOARD_WIDTH	EQU	8
+BOARD_HEIGHT	EQU	9
 Board:		INCBIN	"board.dat"
 
 BoxCnt:		DW	7
