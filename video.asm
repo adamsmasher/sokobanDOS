@@ -9,4 +9,16 @@ WaitFrame:	PUSH	DX
 		POP DX
 		RET
 
+; NOTE: makes ES point to video memory!
+InitVideo:	; set video mode 0x13
+		MOV	AX, 0x13
+		INT	0x10
+		; make ES point to the VGA memory
+		MOV	AX, 0xA000
+		MOV	ES, AX
+		RET
 
+RestoreVideo:	; return to text mode 0x03
+		MOV	AX, 0x03
+		INT	0x10
+		RET
