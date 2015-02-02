@@ -1,11 +1,11 @@
 BoxCnt:		DW	7
-Boxes:		DW	0x0203
-		DW	0x0304
+Boxes:		DW	0x0302
+		DW	0x0403
 		DW	0x0404
-		DW	0x0604
-		DW	0x0605
-		DW	0x0603
-		DW	0x0601
+		DW	0x0406
+		DW	0x0506
+		DW	0x0306
+		DW	0x0106
 
 ; CX = box to find
 ; sets E if the box was found

@@ -4,6 +4,7 @@ Start:		CALL	InstallKB
 		CALL	InitVideo
 		CALL	DrawBoard
 		CALL	DrawPlayer
+		CALL	DrawBoxes
 .gameLoop:	CALL	WaitFrame
 		CALL	UpdatePlayer
 		; check for exit

@@ -27,6 +27,37 @@ DrawBoard:	PUSHA
 		POPA
 		RET
 
+DrawBoxes:	PUSH	CX
+		PUSH	SI
+		MOV	CX, [BoxCnt]
+		MOV	SI, 0
+.boxLoop	MOV	AX, [Boxes + SI]
+		CALL	DrawBox
+		ADD	SI, 2
+		DEC	CX
+		JNZ	.boxLoop
+		POP	CX
+		POP	SI
+		RET
+
+; AL contains box row, AH contains box col
+DrawBox:	CALL	SetScrBase
+		MOV	AL, 1
+		JMP	DrawTile
+
+; AL contains row, AH contains col
+SetScrBase:	PUSH	BX
+		SHL	AH, 4				; offset = col * 16
+		MOV	BL, AH				; backup col offset
+		XOR	BH, BH
+		MOV	AH, 10				; offset = row * 10
+		MUL	AH
+		SHL	AX, 9				; offset *= 32 * 16
+		ADD	AX, BX				; add col offset
+		MOV	[ScrBase], AX
+		POP	BX
+		RET
+
 ; AL = Tile #
 DrawTile:	PUSH	SI
 		PUSH	DI
@@ -90,4 +121,3 @@ BlitTile:	PUSH	CX
 .done:		POP	DX
 		POP	CX
 		RET
-
