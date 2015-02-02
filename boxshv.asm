@@ -37,17 +37,6 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0x4C00			; return code 0
 		INT	0x21
 
-WaitFrame:	PUSH	DX
-		MOV	DX, 0x03DA
-.waitRetrace:	IN	AL, DX
-		TEST	AL, 0x08			; are we in retrace?
-		JNZ	.waitRetrace
-.endRefresh:	IN	AL, DX
-		TEST	AL, 0x08			; are we in refresh?
-		JZ	.endRefresh
-		POP DX
-		RET
-
 ; AX = packed tile coordinates (L = row, H = col)
 ; returns in AX the offset into the board
 GetTileOffset:	SHL	AL, 3
@@ -272,3 +261,4 @@ OldKBHandler:	DD	0
 Quit:		DB	0
 
 %include "kb.asm"
+%include "video.asm"
