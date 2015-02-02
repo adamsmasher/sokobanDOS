@@ -71,6 +71,12 @@ WaitFrame:	PUSH	DX
 		POP DX
 		RET
 
+; AX = packed tile coordinates (L = row, H = col)
+; returns in AX the offset into the board
+GetTileOffset:	SHL	AL, 3
+		ADD	AL, AH
+		XOR	AH, AH
+		RET
 
 DrawBoard:	PUSHA
 		MOV	SI, 0				; index into board
@@ -132,50 +138,62 @@ EraseTile:	PUSH	DI
 		RET
 
 
-MoveTable:	DW	MoveUp, MoveLeft, MoveRight, MoveDown
-UpdatePlayer:	MOV	AL, [MoveDir]
+; how to update the player coordinates (board)
+MoveTable:
+.up:		DB	-1
+		DB	0
+.left:		DB	0
+		DB	-1
+.right:		DB	0
+		DB	1
+.down:		DB	1
+		DB	0
+; how to update the player coordinates (screen)
+MoveTable2:
+.up:		DW	-16 * 320
+.left:		DW	-16
+.right:		DW	16
+.down:		DW	16 * 320
+UpdatePlayer:	PUSH	SI
+		PUSH	BX
+		MOV	AL, [MoveDir]
 		AND	AL, AL				; are we moving?
-		JNZ	.move
-		RET
-.move:		; get index into move table into SI
+		JZ	.done
+		; get index into move table into SI
 		XOR	AH, AH				; clear hi bit
 		MOV	[MoveDir], AH			; clear motion
 		MOV	SI, AX
 		DEC	SI
 		SHL	SI, 1				; *2 for word addrs
+		MOV	AX, [PlayerPos]
+		ADD	AL, [MoveTable + SI]		; get new tile
+		ADD	AH, [MoveTable + SI + 1]
+		MOV	BX, AX				; backup new pos
+		CALL	CanWalk				; is this tile clear?
+		JNZ	.done
 		CALL	ErasePlayer
-		MOV	AX, [MoveTable + SI]		; get move function
-		CALL	AX
+		MOV	[PlayerPos], BX			; update new pos
+		MOV	AX, [MoveTable2 + SI]
+		ADD	[PlayerScrBase], AX
 		CALL	UpdateUnder
-		CALL	CanWalk				; if Z, we're ok
-		JZ	DrawPlayer			; just draw the player
-		; revert the movement if we can't walk
-		XOR	SI, 0x06
-		MOV	AX, [MoveTable + SI]
-		CALL	AX
-		CALL	UpdateUnder
-		JMP	DrawPlayer
-
-
-MoveRight:	ADD	WORD [PlayerTileBase], 16	; move player 16px right
-		INC	BYTE [PlayerCol]
+		CALL	DrawPlayer			; draw the player
+.done:		POP	BX
+		POP	SI
 		RET
 
-MoveDown:	ADD	WORD [PlayerRowBase], 16 * 320	; move player 16px down
-		INC	BYTE [PlayerRow]
+
+; AX = tile we're checking
+; sets E if we can walk
+CanWalk:	PUSH	SI
+		CALL	GetTileOffset
+		MOV	SI, AX
+		CMP	BYTE [Board + SI], 0
+		POP	SI
 		RET
 
-MoveLeft:	SUB	WORD [PlayerTileBase], 16	; move player 16px left
-		DEC	BYTE [PlayerCol]
-		RET
-
-MoveUp:		SUB	WORD [PlayerRowBase], 16 * 320	; move player 16px up
-		DEC	BYTE [PlayerRow]
-		RET
-
-CanWalk:	CMP	BYTE [UnderTile], 0
-		RET
-
+; CX = box to find
+; sets E if the box was found
+; returns a pointer in AX if the box is found
 FindBox:	PUSH	ES
 		PUSH	DI
 		MOV	AX, DS
@@ -245,6 +263,7 @@ ScrBase:	DW	0
 START_ROW	EQU	2
 START_COL	EQU	2
 
+PlayerPos:
 PlayerRow:	DB	START_ROW
 PlayerCol:	DB	START_COL
 
