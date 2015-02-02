@@ -164,7 +164,7 @@ REFRESH_RATE    EQU     70
 WAIT_SECS       EQU     5
 ```
 
-The `EQU` pseudo-instruction defines constants for NASM.
+The `EQU` pseudo-instruction defines constants for NASM, used above.
 
 ```
 %include "video.asm"
