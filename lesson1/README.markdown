@@ -282,8 +282,8 @@ $ nasm boxshv.asm -o boxshv.com
 $ dosemu boxshv.com
 ```
 
-If everything worked out well, DOSEMU should load our program, wait for
-five seconds, and then quit.
+If everything worked out well, DOSEMU should load our program, switch to
+graphics mode, wait for five seconds, and then quit.
 
 If you use a different environment (in particular, a different operating
 system and/or DOSBox or Bochs to test) and can provide instructions for
