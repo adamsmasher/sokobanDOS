@@ -118,8 +118,8 @@ to reuse labels in different functions.
 `WaitFrame` is again a function defined in `video.asm`.
 
 The `DEC` instruction subtracts 1 from its operand, here the counter CX.
-If the result of the decrement is 0, it sets the *Z flag* on the CPU (if not,
-it turns the Z flag off). The next instruction, `JNZ` (Jump if Not Zero),
+If the result of the decrement is 0, it sets the *Z(ero) flag* on the CPU (if
+not, it turns the Z flag off). The next instruction, `JNZ` (Jump if Not Zero),
 then checks the status of the Z flag; if it's not up (i.e., CX does not equal
 zero yet), it loops back to .gameLoop. Otherwise, execution continues on the
 next line.
