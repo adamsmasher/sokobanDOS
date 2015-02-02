@@ -25,12 +25,10 @@ MoveTable2:
 .down:		DW	16 * 320
 UpdatePlayer:	PUSH	SI
 		PUSH	BX
-		MOV	AL, [MoveDir]
-		AND	AL, AL				; are we moving?
+		MOV	AX, [MoveDir]
+		AND	AX, AX				; are we moving?
 		JZ	.done
 		; get index into move table into SI
-		XOR	AH, AH				; clear hi bit
-		MOV	[MoveDir], AH			; clear motion
 		MOV	SI, AX
 		DEC	SI
 		SHL	SI, 1				; *2 for word addrs
@@ -39,7 +37,7 @@ UpdatePlayer:	PUSH	SI
 		ADD	AH, [MoveTable + SI + 1]
 		MOV	BX, AX				; backup new pos
 		CALL	CanWalk				; is this tile clear?
-		JNZ	.done
+		JNZ	.clearMove
 		MOV	AX, BX
 .move:		CALL	ErasePlayer
 		MOV	[PlayerPos], BX			; update new pos
@@ -47,6 +45,7 @@ UpdatePlayer:	PUSH	SI
 		ADD	[PlayerScrBase], AX
 		CALL	UpdateUnder
 		CALL	DrawPlayer			; draw the player
+.clearMove:	MOV	BYTE [MoveDir], 0
 .done:		POP	BX
 		POP	SI
 		RET
