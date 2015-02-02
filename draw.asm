@@ -40,10 +40,26 @@ DrawBoxes:	PUSH	CX
 		POP	SI
 		RET
 
+EraseBoxes:	PUSH	CX
+		PUSH	SI
+		MOV	CX, [BoxCnt]
+		MOV	SI, 0
+.boxLoop	MOV	AX, [Boxes + SI]
+		CALL	EraseBox
+		ADD	SI, 2
+		DEC	CX
+		JNZ	.boxLoop
+		POP	CX
+		POP	SI
+		RET
+
 ; AL contains box row, AH contains box col
 DrawBox:	CALL	SetScrBase
 		MOV	AL, 1
 		JMP	DrawTile
+
+EraseBox:	CALL	SetScrBase
+		JMP	EraseTile
 
 ; AL contains row, AH contains col
 SetScrBase:	PUSH	BX

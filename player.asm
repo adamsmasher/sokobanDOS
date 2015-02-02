@@ -36,6 +36,8 @@ UpdatePlayer:	PUSH	SI
 		ADD	AL, [MoveTable + SI]		; get new tile
 		ADD	AH, [MoveTable + SI + 1]
 		MOV	BX, AX				; backup new pos
+		CALL	Shove
+		MOV	AX, BX
 		CALL	CanWalk				; is this tile clear?
 		JNZ	.clearMove
 		MOV	AX, BX
@@ -48,6 +50,25 @@ UpdatePlayer:	PUSH	SI
 .clearMove:	MOV	BYTE [MoveDir], 0
 .done:		POP	BX
 		POP	SI
+		RET
+
+; AX - contains position to be shoved
+; SI - contains index into move table
+Shove:		PUSH	BX
+		MOV	BX, AX				; backup pos
+		CALL	FindBox
+		JNE	.done
+		SUB	AX, 2
+		XCHG	AX, BX				; put box ptr into BX
+		; check if the shove destination is clear
+		ADD	AL, [MoveTable + SI]
+		ADD	AH, [MoveTable + SI + 1]
+		PUSH	AX				; backup shove dest
+		CALL	CanWalk
+		POP	AX				; get shove dest
+		JNZ	.done
+		MOV	[BX], AX			; update box data
+.done:		POP	BX
 		RET
 
 UpdateUnder:	PUSH	SI

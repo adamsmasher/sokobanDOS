@@ -6,7 +6,9 @@ Start:		CALL	InstallKB
 		CALL	DrawPlayer
 		CALL	DrawBoxes
 .gameLoop:	CALL	WaitFrame
+		CALL	EraseBoxes
 		CALL	UpdatePlayer
+		CALL	DrawBoxes
 		; check for exit
 		CMP	BYTE [Quit], 1
 		JNZ	.gameLoop

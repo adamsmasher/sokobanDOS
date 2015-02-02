@@ -9,7 +9,7 @@ Boxes:		DW	0x0302
 
 ; AX = box to find
 ; sets E if the box was found
-; returns a pointer in AX if the box is found
+; returns a pointer in AX if the box is found to the box *AFTER*
 FindBox:	PUSH	ES
 		PUSH	DI
 		PUSH	CX
