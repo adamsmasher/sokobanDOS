@@ -40,9 +40,6 @@ Start:		; backup old KB interrupt
 
 ScrBase:	DW	0
 
-START_ROW	EQU	2
-START_COL	EQU	2
-
 PlayerPos:
 PlayerRow:	DB	START_ROW
 PlayerCol:	DB	START_COL
@@ -51,10 +48,6 @@ MoveDir:	DW	0
 
 PlayerScrBase:	DW	START_ROW * 320 * 16 + START_COL * 16
 UnderTile:	DB	0
-
-BOARD_WIDTH	EQU	8
-BOARD_HEIGHT	EQU	9
-Board:		INCBIN	"board.dat"
 
 PlayerTile:	INCBIN	"player.dat"
 

@@ -1,3 +1,10 @@
+START_ROW	EQU	2
+START_COL	EQU	2
+
+BOARD_WIDTH	EQU	8
+BOARD_HEIGHT	EQU	9
+Board:		INCBIN	"board.dat"
+
 ; AX = packed tile coordinates (L = row, H = col)
 ; returns in AX the offset into the board
 GetTileOffset:	SHL	AL, 3
