@@ -40,3 +40,14 @@ UpdatePlayer:	PUSH	SI
 .done:		POP	BX
 		POP	SI
 		RET
+
+UpdateUnder:	PUSH	SI
+		XOR	AH, AH
+		MOV	AL, [PlayerRow]
+		SHL	AL, 3				; row * 8 bc 8 cols/row
+		ADD	AL, BYTE [PlayerCol]
+		MOV	SI, AX
+		MOV	AL, [Board + SI]
+		MOV	[UnderTile], AL
+		POP SI
+		RET
