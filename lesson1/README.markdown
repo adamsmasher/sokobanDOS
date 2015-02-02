@@ -42,8 +42,8 @@ reach me on [Twitter](http://www.twitter.com/wk_end).
 ### boxshv.asm
 
 ```
-		; tell NASM we want 16-bit assembly language
-		BITS	16
+                ; tell NASM we want 16-bit assembly language
+                BITS    16
 ```
 
 A semicolon denotes a comment until the end of the line.
@@ -54,7 +54,7 @@ rather than a modern 32 or 64-bit one (the motivation for imposing this
 limitation on ourself is explained in the intro).
 
 ```
-		ORG	0x100				; DOS loads us here
+                ORG     0x100                           ; DOS loads us here
 ```
 
 This is also a NASM directive. When we run our program from DOS, the operating
@@ -62,7 +62,7 @@ system loads it to address 0x100 in memory. We tell NASM this so that it can
 correctly compute the addresses in our program we want to access or jump to.
 
 ```
-Start:		CALL	InitVideo
+Start:          CALL    InitVideo
 ```
 
 Here we have our first actual exectued instruction, `CALL`.
@@ -81,7 +81,7 @@ try removing it).
 `InitVideo` is a function defined later, in `video.asm`.
 
 ```
-		MOV	CX, REFRESH_RATE * WAIT_SECS	; init counter
+                MOV     CX, REFRESH_RATE * WAIT_SECS    ; init counter
 ```
 
 The `MOV` instruction is a general-purpose instruction for shunting data
@@ -101,9 +101,9 @@ elsewhere; note that it's NASM that's computing their product, *not* the CPU.
 how many frames to wait in order to wait for `WAIT_SECS`.
 
 ```
-.gameLoop:	CALL	WaitFrame
-		DEC	CX				; dec counter
-		JNZ	.gameLoop			; loop if counter > 0
+.gameLoop:      CALL    WaitFrame
+                DEC     CX                              ; dec counter
+                JNZ     .gameLoop                       ; loop if counter > 0
 ```
 
 Here we have the core loop of our program, which waits for the desired
@@ -124,10 +124,10 @@ zero yet), it loops back to .gameLoop. Otherwise, execution continues on the
 next line.
 
 ```
-		; exit
-		MOV	AH, 0x4C
-		MOV	AL, 0				; return code 0
-		INT	0x21
+                ; exit
+                MOV     AH, 0x4C
+                MOV     AL, 0                           ; return code 0
+                INT     0x21
 ```
 
 Finally, we need to return control to DOS. We do this by invoking a
@@ -153,14 +153,14 @@ Thus we can - and in future lessons, will - combine these two instructions
 into one:
 
 ```
-		MOV	AX, 0x4C00
+                MOV     AX, 0x4C00
 ```
 
 This would be (microscopically) smaller and faster.
 
 ```
-REFRESH_RATE	EQU	70
-WAIT_SECS	EQU	5
+REFRESH_RATE    EQU     70
+WAIT_SECS       EQU     5
 ```
 
 The `EQU` pseudo-instruction defines constants for NASM.
@@ -206,9 +206,9 @@ registers except for AX, but when writing your own code exactly how to
 handle this is up to you.
 
 ```
-		; port 0x03DA contains VGA status
-		MOV	DX, 0x03DA
-.waitRetrace:	IN	AL, DX
+                ; port 0x03DA contains VGA status
+                MOV     DX, 0x03DA
+.waitRetrace:   IN      AL, DX
 ```
 
 Hardware generally communcates on the x86 over *ports*, which are accessed with
@@ -224,7 +224,7 @@ general-purpose and can do many things, one thing *only* it can do is store
 a 16-bit port number for access with the `IN` and `OUT` instructions.
 
 ```
-		; bit 3 will be on if we're in retrace
+                ; bit 3 will be on if we're in retrace
                 TEST    AL, 0x08                        ; are we in retrace?
                 JNZ     .waitRetrace
 ```
