@@ -14,7 +14,23 @@ GetTileOffset:	SHL	AL, 3
 
 ; AX = tile we're checking
 ; sets E if we can walk
-CanWalk:	PUSH	SI
+CanWalk:	PUSH	BX
+		MOV	BX, AX				; backup tile
+		CALL	CanWalkBoard
+		JNE	.done				; space has a wall
+		MOV	AX, BX				; get tile
+		CALL	FindBox
+		; FindBox returns E if a box IS there
+		; we want to return E if the box ISN'T
+		LAHF					; get flags
+		XOR	AH, 0x40			; flip zero flag
+		SAHF					; copy back into flags
+.done:		POP	BX
+		RET
+
+; AX = tile we're checking
+; sets E if we can walk
+CanWalkBoard:	PUSH	SI
 		CALL	GetTileOffset
 		MOV	SI, AX
 		CMP	BYTE [Board + SI], 0
