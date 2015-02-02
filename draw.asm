@@ -1,3 +1,10 @@
+ScrBase:	DW	0
+
+PlayerTile:	INCBIN	"player.dat"
+
+Tiles:		INCBIN	"wall.dat"
+		INCBIN	"box.dat"
+
 DrawBoard:	PUSHA
 		MOV	SI, 0				; index into board
 		MOV	CH, 0				; row

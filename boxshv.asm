@@ -37,14 +37,6 @@ Start:		; backup old KB interrupt
 		MOV	AX, 0x4C00			; return code 0
 		INT	0x21
 
-
-ScrBase:	DW	0
-
-PlayerTile:	INCBIN	"player.dat"
-
-Tiles:		INCBIN	"wall.dat"
-		INCBIN	"box.dat"
-
 OldKBHandler:	DD	0
 
 Quit:		DB	0
