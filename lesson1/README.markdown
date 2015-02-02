@@ -199,9 +199,9 @@ WaitFrame don't need to worry about losing the contents of their DX register
 during the call. Note that, in this case, we aren't using DX anywhere else
 in the program, so we don't strictly *need* to backup its contents.
 However, it's good practice to do so, to keep things from getting too
-confusing and imposing silent bus. The registers that get backed up (or not)
-and whose responsibility it is to do so, caller or callee, is one part of
-a *calling convention* that as an assembly language programmer, you're
+confusing and introducing strange bugs. The registers that get preserved
+(or not) and whose responsibility it is to do so, caller or callee, is one
+part of a *calling convention* that as an assembly language programmer, you're
 responsible for choosing and maintaining. I generally like to preserve all
 registers except for AX, but when writing your own code exactly how to
 handle this is up to you.
