@@ -49,11 +49,7 @@ DrawBoard:	PUSHA
 		MOV	CH, 0				; row
 		MOV	WORD [ScrBase], 0
 .drawRow:	MOV	CL, 0				; col
-.rowLoop:	CALL	FindBox
-		JNE	.checkTile
-		MOV	AL, 1				; box is tile 1
-		JMP	.drawTile
-.checkTile:	MOV	AL, [Board + SI]		; get tile
+.rowLoop:	MOV	AL, [Board + SI]		; get tile
 		CMP	AL, 0				; is tile 0?
 		JZ	.nextTile
 		DEC	AL
