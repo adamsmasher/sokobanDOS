@@ -39,7 +39,7 @@ UpdatePlayer:	PUSH	SI
 		CALL	Shove
 		MOV	AX, BX
 		CALL	CanWalk				; is this tile clear?
-		JNZ	.clearMove
+		JZ	.clearMove
 		MOV	AX, BX
 .move:		CALL	ErasePlayer
 		MOV	[PlayerPos], BX			; update new pos
@@ -66,7 +66,6 @@ Shove:		PUSH	BX
 		PUSH	AX				; backup shove dest
 		CALL	CanWalk
 		POP	AX				; get shove dest
-		JNZ	.done
 		MOV	[BX], AX			; update box data
 .done:		POP	BX
 		RET
