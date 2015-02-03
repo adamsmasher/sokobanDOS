@@ -55,19 +55,34 @@ UpdatePlayer:	PUSH	SI
 ; AX - contains position to be shoved
 ; SI - contains index into move table
 Shove:		PUSH	BX
+		PUSH	DX
+		; first, determine if there's a box in the shove location
 		MOV	BX, AX				; backup pos
 		CALL	FindBox
 		JNE	.done
 		SUB	AX, 2
 		XCHG	AX, BX				; put box ptr into BX
+		MOV	DX, AX				; copy shove pos
 		; check if the shove destination is clear
 		ADD	AL, [MoveTable + SI]
 		ADD	AH, [MoveTable + SI + 1]
 		PUSH	AX				; backup shove dest
 		CALL	CanWalk
 		POP	AX				; get shove dest
-		MOV	[BX], AX			; update box data
-.done:		POP	BX
+		JZ	.done
+		; now, check if the box was on a target
+		XCHG	AX, DX				; AX = src, DX = dest
+		CALL	IsTarget
+		JNE	.checkDest
+		DEC	BYTE [BoxesOn]
+		; check if it's getting pushed onto a target
+.checkDest:	MOV	AX, DX				; get destination
+		CALL	IsTarget
+		JNE	.doShove
+		INC	BYTE [BoxesOn]
+.doShove:	MOV	[BX], DX			; update box data
+.done:		POP	DX
+		POP	BX
 		RET
 
 UpdateUnder:	PUSH	SI

@@ -10,6 +10,7 @@ Start:		CALL	InstallKB
 		CALL	EraseBoxes
 		CALL	UpdatePlayer
 		CALL	DrawBoxes
+		CALL	CheckForWin
 		; check for exit
 		CMP	BYTE [Quit], 1
 		JNZ	.gameLoop
@@ -18,6 +19,11 @@ Start:		CALL	InstallKB
 		; exit
 		MOV	AX, 0x4C00			; return code 0
 		INT	0x21
+
+CheckForWin:	CMP	BYTE [BoxesOn], TARGET_CNT
+		JNE	.done
+		MOV	BYTE [Quit], 1
+.done:		RET
 
 Quit:		DB	0
 
