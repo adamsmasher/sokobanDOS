@@ -3,7 +3,10 @@ ScrBase:	DW	0
 PlayerTile:	INCBIN	"player.dat"
 
 Tiles:		INCBIN	"wall.dat"
+		INCBIN  "target.dat"
 		INCBIN	"box.dat"
+
+BOX_TILE	EQU	2
 
 DrawBoard:	PUSHA
 		MOV	SI, 0				; index into board
@@ -55,7 +58,7 @@ EraseBoxes:	PUSH	CX
 
 ; AL contains box row, AH contains box col
 DrawBox:	CALL	SetScrBase
-		MOV	AL, 1
+		MOV	AL, BOX_TILE
 		JMP	DrawTile
 
 EraseBox:	CALL	SetScrBase
