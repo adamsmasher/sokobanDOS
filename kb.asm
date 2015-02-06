@@ -1,27 +1,31 @@
-OldKBHandler:	DD	0
+OldKBHandler:	DW	0
+OldKBSeg:	DW	0
 
 InstallKB:	PUSH	ES
+		PUSH	BX
+		PUSH	DX
 		; backup old KB interrupt
-		XOR	AX, AX
-		MOV	ES, AX				; ES = 0
-		MOV	AX, [ES:0x24]
-		MOV	[OldKBHandler], AX
-		MOV	AX, [ES:0x26]
-		MOV	[OldKBHandler + 2], AX
+		MOV	AX, 0x3509
+		INT	0x21
+		MOV	[OldKBHandler], BX
+		MOV	[OldKBSeg], ES
 		; install new KB interrupt
-		MOV	WORD [ES:0x24], KBHandler
-		MOV	WORD [ES:0x26], CS
+		MOV	AX, 0x2509
+		MOV	DX, KBHandler
+		INT	0x21
+		POP	DX
+		POP	BX
 		POP	ES
 		RET
 
-RestoreKB:	PUSH	ES
-		XOR	AX, AX
-		MOV	ES, AX
-		MOV	AX, [OldKBHandler]
-		MOV	[ES:0x24], AX
-		MOV	AX, [OldKBHandler + 2]
-		MOV	[ES:0x26], AX
-		POP	ES
+RestoreKB:	PUSH	DX
+		PUSH	DS
+		MOV	AX, 0x2509
+		MOV	DX, [OldKBHandler]
+		MOV	DS, [OldKBSeg]
+		INT	0x21
+		POP	DS
+		POP	DX
 		RET
 
 DirTable:	DB	72, 75, 77, 80			; up, left, right, down
