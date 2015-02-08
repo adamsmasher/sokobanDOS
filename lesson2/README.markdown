@@ -23,8 +23,8 @@ reach me on [Twitter](http://www.twitter.com/wk_end).
 ```
                 ; tell NASM we want 16-bit assembly language
                 BITS    16
-		ORG	0x100
-Start:		CALL	InstallKB
+                ORG     0x100
+Start:          CALL    InstallKB
 ```
 
 The first thing our program will do is install a *keyboard handler*. When
@@ -34,10 +34,10 @@ once the interrupt occurs. All of the details of this will be covered once
 we look at the code for `InstallKB` in `kb.asm`.
 
 ```
-		CALL	InitVideo
-.gameLoop:	CALL	WaitFrame
-		CMP	BYTE [Quit], 1
-		JNE	.gameLoop
+                CALL    InitVideo
+.gameLoop:      CALL    WaitFrame
+                CMP     BYTE [Quit], 1
+                JNE     .gameLoop
 ```
 
 In lesson 1, we simply waited for five seconds before exiting. Real games,
@@ -61,8 +61,8 @@ address. Sometimes we might want to compare 16-bit numbers given an untyped
 address to them, in which case we'd write `CMP WORD [Some16BitVar], 1`.
 
 ```
-		CALL	RestoreVideo
-		CALL	RestoreKB
+                CALL    RestoreVideo
+                CALL    RestoreKB
 ```
 
 Note that just as we installed our keyboard handler above, we'll need to
@@ -70,11 +70,11 @@ uninstall it as well. Again, the details will be covered when we look at
 `kb.asm`.
 
 ```
-		; exit
-		MOV	AX, 0x4C00
-		INT	0x21
+                ; exit
+                MOV     AX, 0x4C00
+                INT     0x21
 
-Quit:		DB	0
+Quit:           DB      0
 ```
 
 Here's where we define `Quit`. The `DB` mnemonic means Define Byte, and it
@@ -104,8 +104,8 @@ We now include another module, `kb.asm`.
 ### kb.asm
 
 ```
-OldKBHandler:	DW	0
-OldKBSeg:	DW	0
+OldKBHandler:   DW      0
+OldKBSeg:       DW      0
 ```
 
 Here we allocate a 16-bit *word* using the `DW`, Define Word,
@@ -138,7 +138,7 @@ consecutive segments.
 
 
 ```
-InstallKB:	PUSH	ES
+InstallKB:      PUSH    ES
 ```
 
 The x86 has four segment registers: CS, DS, ES, and FS. CS is the Code Segment
@@ -157,13 +157,13 @@ this tutorial, there will be times we'll need to play with segments,
 so try to get comfortable with them.
 
 ```
-		PUSH	BX
-		PUSH	DX
+                PUSH    BX
+                PUSH    DX
                 ; backup old KB interrupt
-		MOV	AX, 0x3509			; get interrupt 9
-		INT	0x21
-		MOV	[OldKBHandler], BX
-		MOV	[OldKBSeg], ES
+                MOV     AX, 0x3509                      ; get interrupt 9
+                INT     0x21
+                MOV     [OldKBHandler], BX
+                MOV     [OldKBSeg], ES
 ```
 
 Recall that when an interrupt happens, the CPU stops whatever it's doing
@@ -186,10 +186,10 @@ After invoking the syscall, it returns the old interrupt handler's segment
 in ES and offset in BX. The next two instructions copy these to memory.
 
 ```
-		; install new KB interrupt
-		MOV	AH, 0x25
-		MOV	DX, KBHandler
-		INT	0x21
+                ; install new KB interrupt
+                MOV     AH, 0x25
+                MOV     DX, KBHandler
+                INT     0x21
 ```
 
 We now use DOS syscall 0x25 to install our new interrupt handler. As always,
@@ -201,20 +201,20 @@ make any changes to it, so we just set DX to point to the new handler and
 invoke the interrupt
 
 ```
-		POP	DX
-		POP	BX
-		POP	ES
-		RET
+                POP     DX
+                POP     BX
+                POP     ES
+                RET
 
-RestoreKB:	PUSH	DX
-		PUSH	DS
-		MOV	AX, 0x2509
-		MOV	DX, [OldKBHandler]
-		MOV	DS, [OldKBSeg]
-		INT	0x21
-		POP	DS
-		POP	DX
-		RET
+RestoreKB:      PUSH    DX
+                PUSH    DS
+                MOV     AX, 0x2509
+                MOV     DX, [OldKBHandler]
+                MOV     DS, [OldKBSeg]
+                INT     0x21
+                POP     DS
+                POP     DX
+                RET
 ```
 
 To restore the old interrupt at the end of our program, we use the exact
@@ -222,7 +222,7 @@ same syscall. Here we do need to DS to point to the old keyboard handler's
 segment, however.
 
 ```
-KBHandler:	PUSH	AX
+KBHandler:      PUSH    AX
 ```
 
 Here we begin writing our interrupt handler. Because interrupts can happen at
@@ -235,7 +235,7 @@ need to worry about manually preserving them (we'll use a special Interrupt
 Return instruction to restore them).
 
 ```
-		IN	AL, 0x60			; get key event
+                IN      AL, 0x60                        ; get key event
 ```
 
 When the keyboard triggers an interrupt, it places the *keycode* of the key
@@ -244,9 +244,9 @@ key was pressed.
 
 
 ```
-		CMP	AL, 0x01			; ESC pressed?
-		JNE	.done
-		MOV	[Quit], AL
+                CMP     AL, 0x01                        ; ESC pressed?
+                JNE     .done
+                MOV     [Quit], AL
 ```
 
 The keycode for the escape key is 1, so we check to see if that was the
@@ -254,8 +254,8 @@ key that the keyboard is reporting to us. If so, we write that 1 into the
 [Quit] variable.
 
 ```
-.done:		MOV	AL, 0x20			; ACK
-		OUT	0x20, AL			; send ACK
+.done:          MOV     AL, 0x20                        ; ACK
+                OUT     0x20, AL                        ; send ACK
 ```
 
 Next, we need to *acknowledge* to keyboard that we've handled the key. To
@@ -263,8 +263,8 @@ do this, we write the value 0x20 out to port 0x20.
 
 
 ```
-		POP	AX
-		IRET
+                POP     AX
+                IRET
 ```
 
 Finally, we need to return from our interrupt handler. We restore the old
