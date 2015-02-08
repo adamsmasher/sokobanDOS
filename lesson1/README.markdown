@@ -288,3 +288,5 @@ graphics mode, wait for five seconds, and then quit.
 If you use a different environment (in particular, a different operating
 system and/or DOSBox or Bochs to test) and can provide instructions for
 setting them up, a pull request would be much appreciated.
+
+(click [here](/lesson2/) for Part 2)
