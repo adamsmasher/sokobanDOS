@@ -2,7 +2,7 @@
 
 ## Part 2 - The Keyboard Handler
 
-(click [here](lesson1/) for Part 1)
+(click [here](/lesson1/) for Part 1)
 
 Games are by definition interactive, so in order to make our game we'll
 need to provide some way of allowing the player to provide inputs to it.
