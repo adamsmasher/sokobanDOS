@@ -41,8 +41,8 @@ we look at the code for `InstallKB` in `kb.asm`.
 ```
 
 In lesson 1, we simply waited for five seconds before exiting. Real games,
-of course, should run as long as the player would like, so instead our
-game loop simply runs forever until the value of a variable, Quit, is
+of course, should run as long as the player would like, so now we make our
+game loop rus forever until the value of a variable, Quit, is
 set to 1, which we'll do in our keyboard handler once the user presses Esc.
 The `CMP` instruction CoMPares its two operands and sets the
 CPU flags accordingly. The following instruction, `JNE`, means Jump if Not
