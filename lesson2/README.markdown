@@ -77,8 +77,8 @@ when we look at `kb.asm`.
 Quit:           DB      0
 ```
 
-Here's where we define `Quit`. The `DB` mnemonic means Define Byte, and it
-simply instructs NASM to write the operand byte out into the binary file
+Here's where we define `Quit`. The `DB` mnemonic means Define Byte; it
+instructs NASM to write the operand byte out into the binary file
 it's generating. When DOS runs our program, the binary is simply copied to
 address 0x100 in memory and then jumped to. Hence, this `DB` is allocating
 space in memory, right after our program code, to store whether or not
@@ -86,12 +86,12 @@ the user has asked to quit yet.
 
 Note that if we didn't invoke the exit syscall, the CPU wouldn't stop. It
 has no understanding of the distinction between code and data, so it would
-simply load the `Quit` byte and try to execute it as though it were an
+just load the `Quit` byte and try to execute it as though it were an
 instruction. In fact, the CPU would *keep* running even after that, executing
 whatever happened to be in memory following our program - effectively,
 random garbage - forever (or until the nonsense instructions cause it to
 crash). This principle is true of our procedure calls, too - if we accidentally
-omit a `RET` instruction at the end of them, the CPU will simply continue
+omit a `RET` instruction at the end of them, the CPU will continue
 executing whatever happens to follow the procedure in memory.
 
 ```
