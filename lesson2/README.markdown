@@ -7,7 +7,7 @@
 Games are by definition interactive, so in order to make our game we'll
 need to provide some way of allowing the player to provide inputs to it.
 While games do often make use of the mouse or a gamepad for control, 
-we'll stick to the good old fashioned PC keyboard. This lesson will thus
+we'll stick to the good old-fashioned PC keyboard. This lesson will thus
 cover the details of programming the PC hardware to notify our game when a key
 event occurs. By the end of it, we'll have a program that loops forever until
 the user presses Esc.
