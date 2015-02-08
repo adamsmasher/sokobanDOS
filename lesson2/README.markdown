@@ -177,7 +177,7 @@ is that it looks in a table stored at the very beginning of memory. Both
 DOS and the BIOS configure this table so that certain interrupt numbers will
 execute their code. We're going to reconfigure this table so that when
 interrupt 9 is triggered, which happens whenever we press a key, it'll
-execute our keyboard handler.
+execute our keyboard handler instead.
 
 Before we rewrite this table, we need to backup the entry DOS had written in
 this table beforehand. To do this, we'll date advantage of DOS syscall
