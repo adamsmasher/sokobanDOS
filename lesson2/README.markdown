@@ -108,16 +108,17 @@ OldKBHandler:   DW      0
 OldKBSeg:       DW      0
 ```
 
-Here we allocate a 16-bit *word* using the `DW`, Define Word,
-pseudo-instruction. This double word is going store one part of the address of
-the keyboard handler that DOS itself has installed. That way, when
+Here we allocate a pair of 16-bit *words* using the `DW`, Define Word,
+pseudo-instruction. These words are going store the two components of the
+address of the keyboard handler that DOS itself has installed. That way, when
 our program quits, we'll be able to reinstall it so that DOS will continue
 to operate the way it did before.
 
-We give it a 0 value for now, but really it doesn't matter - we won't
-read from it until after we've written to it.
+We give them 0 values for now, but really it doesn't matter - we won't
+read from them until after we've written to them.
 
-The next word, OldKBSeg, will be used to the old keyboard handler's *segment*.
+The second word, OldKBSeg, is used to store the old keyboard handler's
+*segment*.
 
 For the 16-bit x86 CPU, all memory addresses are actually *20 bits*. In order
 to construct these 20-bit addresses, the CPU combines a 16-bit address that
