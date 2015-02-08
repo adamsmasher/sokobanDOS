@@ -65,9 +65,9 @@ address to them, in which case we'd write `CMP WORD [Some16BitVar], 1`.
                 CALL    RestoreKB
 ```
 
-Note that just as we installed our keyboard handler above, we'll need to
-uninstall it as well. Again, the details will be covered when we look at
-`kb.asm`.
+Note that just as we installed our keyboard handler when our game started,
+we'll need to uninstall it when it's done. Again, the details will be covered
+when we look at `kb.asm`.
 
 ```
                 ; exit
