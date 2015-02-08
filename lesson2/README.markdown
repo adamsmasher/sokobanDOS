@@ -4,7 +4,7 @@
 
 (click [here](lesson1/) for Part 1)
 
-Games are by definition *interactive*, so in order to make our game we'll
+Games are by definition interactive, so in order to make our game we'll
 need to provide some way of allowing the player to provide inputs to it.
 While games do often make use of the mouse or a gamepad for control, 
 we'll stick to the good old fashioned PC keyboard. This lesson will thus
