@@ -5,7 +5,7 @@ InstallKB:	PUSH	ES
 		PUSH	BX
 		PUSH	DX
 		; backup old KB interrupt
-		MOV	AX, 0x3509
+		MOV	AX, 0x3509			; get interrupt 9
 		INT	0x21
 		MOV	[OldKBHandler], BX
 		MOV	[OldKBSeg], ES
