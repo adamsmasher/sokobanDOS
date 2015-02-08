@@ -10,7 +10,7 @@ InstallKB:	PUSH	ES
 		MOV	[OldKBHandler], BX
 		MOV	[OldKBSeg], ES
 		; install new KB interrupt
-		MOV	AX, 0x2509
+		MOV	AH, 0x25
 		MOV	DX, KBHandler
 		INT	0x21
 		POP	DX
