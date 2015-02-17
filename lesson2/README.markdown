@@ -271,3 +271,5 @@ do this, we write the value 0x20 out to port 0x20.
 Finally, we need to return from our interrupt handler. We restore the old
 value of AX and then invoke the `IRET` instruction to return from the
 interrupt handler and restore the state of the CPU flags.
+
+(click [here](/lesson3/) for Part 3)
